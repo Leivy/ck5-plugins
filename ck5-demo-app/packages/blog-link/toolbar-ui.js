@@ -49,6 +49,7 @@ export default class LinkToolbarUI extends Plugin {
 		new LinkForm({
 			value,
 			onSubmit: (href) => {
+				console.log('onSubmit',href);
 				this.editor.execute(COMMAND_NAME__LINK, href);
 			},
 		});

@@ -57,7 +57,6 @@ export default class LinkForm {
 
 		//所有输入框
 		const inputs=box.querySelectorAll('input');
-		console.log('所有输入框',inputs);
 		for ( let i = 0; i < inputs.length; i++) {
 			const _input = inputs[i];
 			_input.index = i; // 给每个按钮添加一个自定义属性，用来存储当前的索引
@@ -105,8 +104,6 @@ export default class LinkForm {
 }
 
 function template(data) {
-	console.log('template',data);
-	
 	const body = `
     <div class="link-form">
       <div class="link-form-Box" id="box">
