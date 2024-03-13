@@ -12,7 +12,7 @@ export default class LinkForm {
 			props || {}
 		);
 		this.value= {
-			initialValue:undefined,
+			mtype:1,// 1 行内，2 整块
 			fontNums: undefined, // 行内-字数
 			lineNums: undefined, //  整块-行数
 		}// 初始值
@@ -29,11 +29,12 @@ export default class LinkForm {
 		});
 
 		const dialog = this.$form.$pop;
-		this.$input = dialog.querySelector(`input[name=linkValue]`);
-		this.$cleanButton = dialog.querySelector('.link-form-button');
+		// this.$input = dialog.querySelector(`input[name=linkValue]`);
+		// this.$cleanButton = dialog.querySelector('.link-form-button');
 
 		this._bind();
-
+		
+		const _this=this
 		// 首先要获得所有的按钮
 		const box = dialog.querySelector( '#box' );
 		const btns = box.querySelectorAll('button');
@@ -50,20 +51,18 @@ export default class LinkForm {
 					divs[k].style.display = 'none';
 				}
 				divs[this.index].style.display = 'block';
+				_this.value.mtype=this.getAttribute('mtype')
 			};
 		}
 
 		//所有输入框
 		const inputs=box.querySelectorAll('input');
 		console.log('所有输入框',inputs);
-		const _this=this
 		for ( let i = 0; i < inputs.length; i++) {
 			const _input = inputs[i];
 			_input.index = i; // 给每个按钮添加一个自定义属性，用来存储当前的索引
 			_input.onchange = function (e) {
-				console.log('inputs-1',e.target.value,_this.value);
 				_this.value[inputs[this.index].name]=e.target.value
-				console.log('inputs-1-value',_this.value);
 				// const _nums=
 				// inputs[this.index].style.display = 'block';
 			};
@@ -75,10 +74,10 @@ export default class LinkForm {
 	}
 
 	_bind() {
-		this.$cleanButton.addEventListener(
-			'click',
-			this._handleCleanup.bind(this)
-		);
+		// this.$cleanButton.addEventListener(
+		// 	'click',
+		// 	this._handleCleanup.bind(this)
+		// );
 	}
 
 	_unbind() {
@@ -110,10 +109,9 @@ function template(data) {
 	
 	const body = `
     <div class="link-form">
-
       <div class="link-form-Box" id="box">
-        <button class="current" >插入行内</button>
-        <button  > 插入整块</button>
+        <button class="current" mtype='1'>插入行内</button>
+        <button mtype='2' > 插入整块</button>
         <div class="link-form-con" style="display:block">
 			<div class="link-form-item">
 				<span >行内字数</span> <input autocomplete="off"
@@ -124,7 +122,6 @@ function template(data) {
 					value="${data.fontNums || ''}"
 				/>
 			</div>
-			
 		</div>
         <div class="link-form-con">
 			<div class="link-form-item">
@@ -138,15 +135,6 @@ function template(data) {
 			</div>
 		</div>
       </div>
-      
-      <input
-        placeholder="插入链接为空时取消超链接"
-        type="text"
-        class="link-form-input"
-        name="linkValue"
-        value="${data.initialValue || ''}"
-      />
-      <span title="清空" class="link-form-button">X</span>
     </div>
   `;
 
