@@ -1,8 +1,9 @@
-export const COMMAND_NAME__LINK = 'gap';
-export const TOOLBAR_NAME__LINK = 'xiaoti-gap';
-export const TOOLBAR_LABEL__LINK = '超链接';
-export const SCHEMA_NAME__LINK = 'gapHref';
-export const CUSTOM_PROPERTIES__LINK = 'gap';
-export const EDITORING__LINK = 'gapEditing';
-export const GAP_NAME_SCHEMA = 'xiaotigap';
+export const COMMAND_NAME__GAP = 'gap';
+export const TOOLBAR_NAME__GAP = 'xiaoti-gap';
+export const TOOLBAR_LABEL__GAP = '超链接';
+export const SCHEMA_NAME__GAP = 'gapHref';
+export const CUSTOM_PROPERTIES__GAP = 'gap';
+export const EDITORING__GAP = 'gapEditing';
 export const GAP_CLASS = 'ck5-xiaoti-gap';
+export const SCHEMA_NAME__BLOCK = 'XiaotiGapBlock';
+export const SCHEMA_NAME__inline = 'XiaotiGapInline';

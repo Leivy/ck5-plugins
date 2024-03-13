@@ -4,9 +4,9 @@ import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import linkIcon from '@ckeditor/ckeditor5-link/theme/icons/link.svg';
 import {
-	COMMAND_NAME__LINK,
-	TOOLBAR_NAME__LINK,
-	TOOLBAR_LABEL__LINK,
+	COMMAND_NAME__GAP,
+	TOOLBAR_NAME__GAP,
+	TOOLBAR_LABEL__GAP,
 } from './constant';
 
 import LinkForm from './form/link-form';
@@ -18,15 +18,15 @@ export default class LinkToolbarUI extends Plugin {
 
 	_createToolbarButton() {
 		const editor = this.editor;
-		// COMMAND_NAME__LINK -> 'link'
-		const linkCommand = editor.commands.get(COMMAND_NAME__LINK);
+		// COMMAND_NAME__GAP -> 'gap'
+		const linkCommand = editor.commands.get(COMMAND_NAME__GAP);
 
-		// TOOLBAR_NAME__LINK -> 'ck-link'
-		editor.ui.componentFactory.add(TOOLBAR_NAME__LINK, (locale) => {
+		// TOOLBAR_NAME__GAP -> 'ck-link'
+		editor.ui.componentFactory.add(TOOLBAR_NAME__GAP, (locale) => {
 			const view = new ButtonView(locale);
 			view.set({
-				// TOOLBAR_LABEL__LINK -> '超链接'
-				label: TOOLBAR_LABEL__LINK,
+				// TOOLBAR_LABEL__GAP -> '超链接'
+				label: TOOLBAR_LABEL__GAP,
 				tooltip: true,
 				icon: linkIcon,
 				class: 'toolbar_button_link',
@@ -50,7 +50,7 @@ export default class LinkToolbarUI extends Plugin {
 			value,
 			onSubmit: (href) => {
 				console.log('onSubmit',href);
-				this.editor.execute(COMMAND_NAME__LINK, href);
+				this.editor.execute(COMMAND_NAME__GAP, href);
 			},
 		});
 	}

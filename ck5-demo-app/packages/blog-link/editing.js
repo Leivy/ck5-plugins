@@ -4,10 +4,9 @@ import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
 import inlineHighlight from "@ckeditor/ckeditor5-typing/src/utils/inlinehighlight";
 import LinkCommand from "./command";
 import {
-  SCHEMA_NAME__LINK,
-  COMMAND_NAME__LINK,
-  EDITORING__LINK,
-  GAP_NAME_SCHEMA,
+  SCHEMA_NAME__GAP,
+  COMMAND_NAME__GAP,
+  EDITORING__GAP,SCHEMA_NAME__BLOCK
 } from "./constant";
 import { toWidget } from "@ckeditor/ckeditor5-widget/src/utils";
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
@@ -16,7 +15,7 @@ const HIGHLIGHT_CLASS = "ck-link_selected";
 
 export default class LinkEditing extends Plugin {
   static get pluginName() {
-    return EDITORING__LINK;
+    return EDITORING__GAP;
   }
   static get requires() {
     return [Widget];
@@ -27,11 +26,11 @@ export default class LinkEditing extends Plugin {
     this._defineSchema();
     this._defineConverters();
 
-    // 注册一个 BoldCommand 命令 COMMAND_NAME__LINK -> 'gap'
-    editor.commands.add(COMMAND_NAME__LINK, new LinkCommand(editor));
+    // 注册一个 BoldCommand 命令 COMMAND_NAME__GAP -> 'gap'
+    editor.commands.add(COMMAND_NAME__GAP, new LinkCommand(editor));
 
     // 当光标位于 link 中间，追加 class，用于高亮当前超链接
-    inlineHighlight(editor, SCHEMA_NAME__LINK, "a", HIGHLIGHT_CLASS);
+    inlineHighlight(editor, SCHEMA_NAME__GAP, "a", HIGHLIGHT_CLASS);
   }
 
   // 注册 schema 相当于 model 里的 html 标签 容器
@@ -39,10 +38,10 @@ export default class LinkEditing extends Plugin {
 	console.log('注册 schema_defineSchema');
     const schema = this.editor.model.schema;
 	schema.extend('$text', {
-		// SCHEMA_NAME__LINK -> 'linkHref'
-		allowAttributes: SCHEMA_NAME__LINK,
+		// SCHEMA_NAME__GAP -> 'linkHref'
+		allowAttributes: SCHEMA_NAME__GAP,
 	});
-    // schema.register(GAP_NAME_SCHEMA, {
+    // schema.register(SCHEMA_NAME__BLOCK, {
     //   isLimit: true, // Limit Element 就相当于 iframe
     //   isObject: true, // 是否为一个整体
     //   //   allowWhere: "$text", // 允许在哪个 schema 插入
@@ -55,11 +54,12 @@ export default class LinkEditing extends Plugin {
     const conversion = this.editor.conversion;
     // 将 model 渲染为 HTML
     conversion.for("downcast").attributeToElement({
-      model: SCHEMA_NAME__LINK,
+      model: SCHEMA_NAME__GAP,
       // attributeToElement 方法中，如果 view 是一个函数，其第一个参数是对应的属性值，在这里就是超链接的 url
       // 实际项目中需要校验 url 的真实性，这里就省略掉了
       view: createGapElement,
     });
+	// 将 HTML 渲染为 model
 	conversion.for('upcast').elementToAttribute({
 		view: {
 			name: 'a',
@@ -68,29 +68,11 @@ export default class LinkEditing extends Plugin {
 			},
 		},
 		model: {
-			key: SCHEMA_NAME__LINK,
+			key: SCHEMA_NAME__GAP,
 			value: (viewElement) => viewElement.getAttribute('href'),
 		},
 	});
-    // conversion.for("editingDowncast").elementToElement({
-    //   model: GAP_NAME_SCHEMA,
-    //   view: (modelElement, { writer }) => {
-    //     const element = createGapElement(modelElement.getAttribute("value"), {
-    //       writer,
-    //     });
-    //     return toWidget(element, writer);
-    //   },
-    // });
-
-    // 将 HTML 渲染为 model
-    // conversion.for("upcast").elementToElement({
-    //   view: {
-    //     name: "div",
-    //   },
-    //   model: (view, { writer }) => {
-    //     return writer.createElement(GAP_NAME_SCHEMA, { value: "wise" });
-    //   },
-    // });
+   
   }
 }
 

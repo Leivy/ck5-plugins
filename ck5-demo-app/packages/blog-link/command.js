@@ -2,7 +2,7 @@
 
 import Command from "@ckeditor/ckeditor5-core/src/command";
 import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
-import { SCHEMA_NAME__LINK,GAP_NAME_SCHEMA ,GAP_CLASS} from "./constant";
+import { SCHEMA_NAME__GAP,} from "./constant";
 
 export default class LinkCommand extends Command {
   refresh() {
@@ -10,12 +10,12 @@ export default class LinkCommand extends Command {
     const doc = model.document;
 
     // 将链接关联到到 value
-    this.value = doc.selection.getAttribute(SCHEMA_NAME__LINK);
+    this.value = doc.selection.getAttribute(SCHEMA_NAME__GAP);
     // 根据 editing.js 中定义的 schema 规则来维护按钮的禁用/启用状态
     this.isEnabled =true
     // this.isEnabled = model.schema.checkAttributeInSelection(
     //   doc.selection,
-    //   SCHEMA_NAME__LINK
+    //   SCHEMA_NAME__GAP
     // );
   }
 
@@ -27,24 +27,16 @@ export default class LinkCommand extends Command {
 
     model.change((writer) => {
 
-      // const element = writer.createElement(GAP_NAME_SCHEMA, {
-      //   class:GAP_CLASS,
-      // });
-      // console.log('writer.createElement=',element);
-      
-      // model.insertContent(element);
-      // writer.setSelection(element, "on");
-
       // 选区的锚点和焦点是否位于同一位置
       if (selection.isCollapsed) {
         const position = selection.getFirstPosition();
 
         // 光标位于 link 中间
-        if (selection.hasAttribute(SCHEMA_NAME__LINK)) {
+        if (selection.hasAttribute(SCHEMA_NAME__GAP)) {
           const range = findAttributeRange(
             position,
-            SCHEMA_NAME__LINK,
-            selection.getAttribute(SCHEMA_NAME__LINK),
+            SCHEMA_NAME__GAP,
+            selection.getAttribute(SCHEMA_NAME__GAP),
             model
           );
           this._handleLink(writer, href, range)
@@ -52,7 +44,7 @@ export default class LinkCommand extends Command {
       } else {
         const ranges = model.schema.getValidRanges(
           selection.getRanges(),
-          SCHEMA_NAME__LINK
+          SCHEMA_NAME__GAP
         );
         for (const range of ranges) {
           this._handleLink(writer, href, range)
@@ -63,9 +55,9 @@ export default class LinkCommand extends Command {
 
   _handleLink(writer, href, range) {
     if (href) {
-      writer.setAttribute(SCHEMA_NAME__LINK, href, range);
+      writer.setAttribute(SCHEMA_NAME__GAP, href, range);
     } else {
-      writer.removeAttribute(SCHEMA_NAME__LINK, range);
+      writer.removeAttribute(SCHEMA_NAME__GAP, range);
     }
   }
 }
