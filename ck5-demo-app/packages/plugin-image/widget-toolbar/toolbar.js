@@ -5,8 +5,9 @@ import WidgetToolbarRepository from "@ckeditor/ckeditor5-widget/src/widgettoolba
 import ImageEdit from "./edit/main";
 import {
   WIDGET_TOOLBAR_NAME__IMAGE,
+  CUSTOM_PROPERTY__IMAGE,
 } from "../constant";
-
+import { isWidget } from "@ckeditor/ckeditor5-widget/src/utils";
 export default class ImageWidgetToolbar extends Plugin {
   static get requires() {
     return [WidgetToolbarRepository, ImageEdit];
@@ -41,7 +42,8 @@ function getSelectedImageWidget(selection) {
 
 function isImageWidget(viewElement) {
   return (
-    !!viewElement && viewElement.getCustomProperty(CUSTOM_PROPERTY__IMAGE) &&
+    !!viewElement &&
+    viewElement.getCustomProperty(CUSTOM_PROPERTY__IMAGE) &&
     isWidget(viewElement)
   );
 }
