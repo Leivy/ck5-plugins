@@ -2,7 +2,6 @@
 
 import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
 import WidgetToolbarRepository from "@ckeditor/ckeditor5-widget/src/widgettoolbarrepository";
-import { getSelectedImageWidget } from '../util';
 import ImageEdit from "./edit/main";
 import {
   WIDGET_TOOLBAR_NAME__IMAGE,
@@ -28,4 +27,21 @@ export default class ImageWidgetToolbar extends Plugin {
       getRelatedElement: getSelectedImageWidget,
     });
   }
+}
+
+function getSelectedImageWidget(selection) {
+  const viewElement = selection.getSelectedElement();
+
+  if (viewElement && isImageWidget(viewElement)) {
+    return viewElement;
+  }
+
+  return null;
+}
+
+function isImageWidget(viewElement) {
+  return (
+    !!viewElement && viewElement.getCustomProperty(CUSTOM_PROPERTY__IMAGE) &&
+    isWidget(viewElement)
+  );
 }

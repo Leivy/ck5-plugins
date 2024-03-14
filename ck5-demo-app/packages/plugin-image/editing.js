@@ -3,7 +3,6 @@
 import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
 import Widget from '@ckeditor/ckeditor5-widget/src/widget';
 import { toWidget } from '@ckeditor/ckeditor5-widget/src/utils';
-import { createImageViewElement, createImageModel } from './util';
 import ImageCommand from "./command";
 import {
   SCHEMA_NAME__IMAGE,
@@ -76,7 +75,37 @@ constructor(editor) {
         name: "figure",
         classes: IMAGE_CLASS,
       },
-      model: createImageModel,
+      // 根据 View 创建图片 Model
+      model:function (view, { writer }) {
+        const params = {};
+        const imageInner = view.getChild(0);
+        ["src", "title"].map((k) => {
+          params[k] = imageInner.getAttribute(k);
+        });
+      
+        return writer.createElement(SCHEMA_NAME__IMAGE, params);
+      }
+      ,
     });
   }
+}
+// 根据 Model 创建图片 View
+ function createImageViewElement(element, writer, imageConfig) {
+  // 获取用户配置的 className
+  const { className } = imageConfig || {};
+
+  // 使用 createContainerElement 创建容器元素
+  const figure = writer.createContainerElement("figure", {
+    class: `${IMAGE_CLASS} ${className || ""}`,
+  });
+
+  // 使用 createEmptyElement 创建 img 标签，并设置属性
+  const imageElement = writer.createEmptyElement("img");
+  ["src", "title"].map((k) => {
+    writer.setAttribute(k, element.getAttribute(k), imageElement);
+  });
+
+  // 将 img 作为子节点插入到 figure
+  writer.insert(writer.createPositionAt(figure, 0), imageElement);
+  return figure;
 }
