@@ -84,13 +84,13 @@ constructor(editor) {
       },
       // 根据 View 创建图片 Model
       model:function (view, { writer }) {
-        console.log('img-upcast-根据 View 创建图片 Model');
         
         const params = {};
         const imageInner = view.getChild(0);
         ["src", "title"].map((k) => {
           params[k] = imageInner.getAttribute(k);
         });
+        console.log('img-upcast-根据 View 创建图片 Model',params);
       
         return writer.createElement(SCHEMA_NAME__IMAGE, params);
       }

@@ -9,6 +9,7 @@ import {
   EDITORING__GAP,
   SCHEMA_NAME__BLOCK,
   GAP_CLASS,
+  SCHEMA_NAME__INLINE,
 } from "./constant";
 import { toWidget } from "@ckeditor/ckeditor5-widget/src/utils";
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
@@ -32,7 +33,7 @@ export default class LinkEditing extends Plugin {
     editor.commands.add(COMMAND_NAME__GAP, new LinkCommand(editor));
 
     // 当光标位于 link 中间，追加 class，用于高亮当前超链接
-    inlineHighlight(editor, SCHEMA_NAME__GAP, "a", HIGHLIGHT_CLASS);
+    // inlineHighlight(editor, SCHEMA_NAME__GAP, "a", HIGHLIGHT_CLASS);
   }
 
   // 注册 schema 相当于 model 里的 html 标签 容器
@@ -43,6 +44,11 @@ export default class LinkEditing extends Plugin {
       isObject: true,
       isBlock: true,
       allowWhere: "$block",
+      allowAttributes: ["class", "databox",'style','mtype','fontNums','lineNums'],
+    });
+    schema.register(SCHEMA_NAME__INLINE, {
+      isBlock: false,
+      allowWhere: "$text",
       allowAttributes: ["class", "databox",'style'],
     });
   }
@@ -54,16 +60,13 @@ export default class LinkEditing extends Plugin {
     // 将 model 渲染为 HTML
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
-      view: (element, { writer }) => {
-        console.log("gap-editingDowncast");
-        const widgetElement = createGapElement(
+      view: (element, { writer },data) => {
+        console.log("gap-editingDowncast",data);
+        return createBlockElement(
           element,
           writer,
           this.imageConfig
         );
-        return widgetElement
-        // writer.setCustomProperty(CUSTOM_PROPERTY__IMAGE, true, widgetElement);
-        // return toWidget(widgetElement, writer);
       },
     });
     conversion.for("dataDowncast").elementToElement({
@@ -71,7 +74,7 @@ export default class LinkEditing extends Plugin {
       view: (element, { writer }) => {
         console.log("gap-dataDowncast");
 
-        return createGapElement(element, writer, this.imageConfig);
+        return createBlockElement(element, writer, this.imageConfig);
       },
     });
     // 将 HTML 渲染为 model
@@ -82,7 +85,7 @@ export default class LinkEditing extends Plugin {
       },
       // 根据 View 创建图片 Model
       model: function (view, { writer }) {
-        console.log("gap-upcast-根据 View 创建图片 Model");
+        console.log("gap-upcast-根据 View 创建图片 Model",view);
 
         const params = {};
         const imageInner = view.getChild(0);
@@ -96,21 +99,33 @@ export default class LinkEditing extends Plugin {
   }
 }
 
-function createGapElement(element, writer, imageConfig) {
+//生成块级元素
+function createBlockElement(element, writer, imageConfig) {
   console.log("gap-createGapElement", imageConfig);
   // 获取用户配置的 className
   const { className } = imageConfig || {};
 
   // 使用 createContainerElement 创建容器元素
   const figure = writer.createContainerElement("figure", {
-    class: `${GAP_CLASS} ${className || ""}`,
+    class: `${GAP_CLASS}-block ${className || ""}`,
   });
+  const blockElement = writer.createEmptyElement("div");
 
-  const _style='background: #eee;height: 20px;'
+  const _lineNums=Number(+element.getAttribute('lineNums'))
+  console.log('gap-_lineNums',_lineNums,writer);
+  if(!Number.isInteger(_lineNums)) return console.log('行数不是整数');
+  for(let i = 0; i < _lineNums; i++ ){
+    const _div=writer.createEmptyElement("div");
+    writer.setAttribute('style','border-bottom:1px solid #000;height:20px',_div)
+    // writer.append(_div, blockElement );
+  }
+
+
+  const _style=`background: #eee;height: ${20*_lineNums}px;`
 
   // 使用 createEmptyElement 创建 img 标签，并设置属性
-  const blockElement = writer.createEmptyElement("div");
-  ["class", "databox"].map((k) => {
+  // 设置空格数据
+  ['mtype','fontNums','lineNums'].map((k) => {
     writer.setAttribute(k, element.getAttribute(k), blockElement);
   });
   writer.setAttribute('style',_style, blockElement);

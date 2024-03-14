@@ -6,4 +6,4 @@ export const CUSTOM_PROPERTIES__GAP = 'gap';
 export const EDITORING__GAP = 'gapEditing';
 export const GAP_CLASS = 'ck5-xiaoti-gap';
 export const SCHEMA_NAME__BLOCK = 'XiaotiGapBlock';
-export const SCHEMA_NAME__inline = 'XiaotiGapInline';
+export const SCHEMA_NAME__INLINE = 'XiaotiGapInline';

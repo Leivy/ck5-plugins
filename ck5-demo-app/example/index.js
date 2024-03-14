@@ -1,6 +1,10 @@
 import Editor from "../packages/my-editor/src/index";
 
-const content = `<p>wise&nbsp;<strong>wrong</strong>&nbsp;<a href="wise">hello</a>&nbsp;<strong>world</strong></p><figure class="ck-image wise-test"><img src="//t7.baidu.com/it/u=2621658848,3952322712&amp;fm=193&amp;f=GIF" title="测试图片"></figure>`
+const content = `<p>wise&nbsp;<strong>wrong</strong>&nbsp;<a href="wise">hello</a>&nbsp;<strong>world</strong></p>
+<p>1wise&nbsp;<strong>wrong</strong>&nbsp;<a href="wise">hello</a>&nbsp;<strong>world</strong></p>
+<p>2wise&nbsp;<strong>wrong</strong>&nbsp;<a href="wise">hello</a>&nbsp;<strong>world</strong></p>
+
+<figure class="ck-image wise-test"><img src="//t7.baidu.com/it/u=2621658848,3952322712&amp;fm=193&amp;f=GIF" title="测试图片"></figure>`
 
 function render() {
   return new Editor({
