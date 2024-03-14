@@ -21,6 +21,8 @@ export default class LinkCommand extends Command {
 }
 
 function insertImage(model, attributes = {}) {
+  console.log("insertImage");
+
   if (!attributes || !attributes.src) {
     return;
   }

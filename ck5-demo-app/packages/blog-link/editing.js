@@ -6,7 +6,9 @@ import LinkCommand from "./command";
 import {
   SCHEMA_NAME__GAP,
   COMMAND_NAME__GAP,
-  EDITORING__GAP,SCHEMA_NAME__BLOCK
+  EDITORING__GAP,
+  SCHEMA_NAME__BLOCK,
+  GAP_CLASS,
 } from "./constant";
 import { toWidget } from "@ckeditor/ckeditor5-widget/src/utils";
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
@@ -35,56 +37,86 @@ export default class LinkEditing extends Plugin {
 
   // 注册 schema 相当于 model 里的 html 标签 容器
   _defineSchema() {
-	console.log('注册 schema_defineSchema');
+    console.log("gap-注册schema _defineSchema");
     const schema = this.editor.model.schema;
-	schema.extend('$text', {
-		// SCHEMA_NAME__GAP -> 'linkHref'
-		allowAttributes: SCHEMA_NAME__GAP,
-	});
-    // schema.register(SCHEMA_NAME__BLOCK, {
-    //   isLimit: true, // Limit Element 就相当于 iframe
-    //   isObject: true, // 是否为一个整体
-    //   //   allowWhere: "$text", // 允许在哪个 schema 插入
-    // });
+    schema.register(SCHEMA_NAME__BLOCK, {
+      isObject: true,
+      isBlock: true,
+      allowWhere: "$block",
+      allowAttributes: ["class", "databox",'style'],
+    });
   }
   // 定义转换器
   _defineConverters() {
-    console.log("定义转换器_defineConverters");
+    console.log("gap-定义转换器_defineConverters");
 
     const conversion = this.editor.conversion;
     // 将 model 渲染为 HTML
-    conversion.for("downcast").attributeToElement({
-      model: SCHEMA_NAME__GAP,
-      // attributeToElement 方法中，如果 view 是一个函数，其第一个参数是对应的属性值，在这里就是超链接的 url
-      // 实际项目中需要校验 url 的真实性，这里就省略掉了
-      view: createGapElement,
+    conversion.for("editingDowncast").elementToElement({
+      model: SCHEMA_NAME__BLOCK,
+      view: (element, { writer }) => {
+        console.log("gap-editingDowncast");
+        const widgetElement = createGapElement(
+          element,
+          writer,
+          this.imageConfig
+        );
+        return widgetElement
+        // writer.setCustomProperty(CUSTOM_PROPERTY__IMAGE, true, widgetElement);
+        // return toWidget(widgetElement, writer);
+      },
     });
-	// 将 HTML 渲染为 model
-	conversion.for('upcast').elementToAttribute({
-		view: {
-			name: 'a',
-			attributes: {
-				href: true,
-			},
-		},
-		model: {
-			key: SCHEMA_NAME__GAP,
-			value: (viewElement) => viewElement.getAttribute('href'),
-		},
-	});
-   
+    conversion.for("dataDowncast").elementToElement({
+      model: SCHEMA_NAME__BLOCK,
+      view: (element, { writer }) => {
+        console.log("gap-dataDowncast");
+
+        return createGapElement(element, writer, this.imageConfig);
+      },
+    });
+    // 将 HTML 渲染为 model
+    conversion.for("upcast").elementToElement({
+      view: {
+        name: "figure",
+        classes: GAP_CLASS,
+      },
+      // 根据 View 创建图片 Model
+      model: function (view, { writer }) {
+        console.log("gap-upcast-根据 View 创建图片 Model");
+
+        const params = {};
+        const imageInner = view.getChild(0);
+        ["class", "databox"].map((k) => {
+          params[k] = imageInner.getAttribute(k);
+        });
+
+        return writer.createElement(SCHEMA_NAME__BLOCK, params);
+      },
+    });
   }
 }
 
-function createGapElement(href, { writer }) {
-	console.log('createGapElement',href);
-	
-  const element = writer.createContainerElement("div");
-  // const value = modelElement.getAttribute("value");
-  // const innerText = writer.createText(value);
-  // writer.insert(writer.createPositionAt(element, 0), innerText);
+function createGapElement(element, writer, imageConfig) {
+  console.log("gap-createGapElement", imageConfig);
+  // 获取用户配置的 className
+  const { className } = imageConfig || {};
 
-  // return element;
+  // 使用 createContainerElement 创建容器元素
+  const figure = writer.createContainerElement("figure", {
+    class: `${GAP_CLASS} ${className || ""}`,
+  });
 
-  return writer.createAttributeElement('a', { href });
+  const _style='background: #eee;height: 20px;'
+
+  // 使用 createEmptyElement 创建 img 标签，并设置属性
+  const blockElement = writer.createEmptyElement("div");
+  ["class", "databox"].map((k) => {
+    writer.setAttribute(k, element.getAttribute(k), blockElement);
+  });
+  writer.setAttribute('style',_style, blockElement);
+
+
+  // 将 img 作为子节点插入到 figure
+  writer.insert(writer.createPositionAt(figure, 0), blockElement);
+  return figure;
 }

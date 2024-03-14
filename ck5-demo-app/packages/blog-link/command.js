@@ -2,7 +2,8 @@
 
 import Command from "@ckeditor/ckeditor5-core/src/command";
 import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
-import { SCHEMA_NAME__GAP,} from "./constant";
+import { SCHEMA_NAME__GAP,SCHEMA_NAME__BLOCK} from "./constant";
+import { findOptimalInsertionPosition } from "@ckeditor/ckeditor5-widget/src/utils";
 
 export default class LinkCommand extends Command {
   refresh() {
@@ -19,13 +20,24 @@ export default class LinkCommand extends Command {
     // );
   }
 
-  execute(href) {
-    console.log('command-execute',href);
+  execute(data) {
+    console.log('command-execute',data);
     
     const model = this.editor.model;
     const selection = model.document.selection;
 
     model.change((writer) => {
+      const blockElement = writer.createElement(SCHEMA_NAME__BLOCK, data);
+      // 使用 findOptimalInsertionPosition 方法来获取最佳位置
+      // 如果某个选择位于段落的中间，则将返回该段落之前的位置，不拆分当前段落
+      // 如果选择位于段落的末尾，则将返回该段落之后的位置
+      const insertAtSelection = findOptimalInsertionPosition(
+        model.document.selection,
+        model
+      );
+      model.insertContent(blockElement, insertAtSelection);
+
+      return 
 
       // 选区的锚点和焦点是否位于同一位置
       if (selection.isCollapsed) {

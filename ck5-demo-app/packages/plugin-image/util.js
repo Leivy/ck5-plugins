@@ -1,12 +1,5 @@
-import {
-  findOptimalInsertionPosition,
-  isWidget,
-} from "@ckeditor/ckeditor5-widget/src/utils";
-import {
-  IMAGE_CLASS,
-  SCHEMA_NAME__IMAGE,
-  CUSTOM_PROPERTY__IMAGE,
-} from "./constant";
+import { findOptimalInsertionPosition } from "@ckeditor/ckeditor5-widget/src/utils";
+import { SCHEMA_NAME__IMAGE } from "./constant";
 
 export function insertImage(model, attributes = {}) {
   if (!attributes || !attributes.src) {

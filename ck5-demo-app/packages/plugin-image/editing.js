@@ -42,6 +42,7 @@ constructor(editor) {
 
   _defineSchema() {
     const schema = this.editor.model.schema;
+    console.log('img-_defineSchema');
 
     // SCHEMA_NAME__IMAGE --> "image"
     schema.register(SCHEMA_NAME__IMAGE, {
@@ -54,10 +55,12 @@ constructor(editor) {
 
   _defineConverters() {
     const conversion = this.editor.conversion;
+    console.log('img-_defineConverters');
 
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__IMAGE,
       view: (element, { writer }) => {
+        console.log('img-editingDowncast');
         const widgetElement = createImageViewElement(element, writer, this.imageConfig);
         writer.setCustomProperty(CUSTOM_PROPERTY__IMAGE, true, widgetElement);
         return toWidget(widgetElement, writer);
@@ -66,8 +69,12 @@ constructor(editor) {
 
     conversion.for("dataDowncast").elementToElement({
       model: SCHEMA_NAME__IMAGE,
-      view: (element, { writer }) =>
-        createImageViewElement(element, writer, this.imageConfig),
+      view: (element, { writer }) =>{
+        console.log('img-dataDowncast');
+        
+        return createImageViewElement(element, writer, this.imageConfig)
+      }
+        
     });
 
     conversion.for("upcast").elementToElement({
@@ -77,6 +84,8 @@ constructor(editor) {
       },
       // 根据 View 创建图片 Model
       model:function (view, { writer }) {
+        console.log('img-upcast-根据 View 创建图片 Model');
+        
         const params = {};
         const imageInner = view.getChild(0);
         ["src", "title"].map((k) => {
@@ -91,6 +100,8 @@ constructor(editor) {
 }
 // 根据 Model 创建图片 View
  function createImageViewElement(element, writer, imageConfig) {
+  console.log('createImageViewElement-根据 Model 创建图片 View');
+  
   // 获取用户配置的 className
   const { className } = imageConfig || {};
 
