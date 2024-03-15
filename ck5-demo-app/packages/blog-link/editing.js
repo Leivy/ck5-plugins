@@ -14,7 +14,14 @@ import {
 import { toWidget } from "@ckeditor/ckeditor5-widget/src/utils";
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
 
-const HIGHLIGHT_CLASS = "ck-link_selected";
+const ALLOWATTRIBUTES = [
+  "class",
+  "databox",
+  "style",
+  "mtype",
+  "fontNums",
+  "lineNums",
+];
 
 export default class LinkEditing extends Plugin {
   static get pluginName() {
@@ -44,19 +51,12 @@ export default class LinkEditing extends Plugin {
       isObject: true,
       isBlock: true,
       allowWhere: "$block",
-      allowAttributes: [
-        "class",
-        "databox",
-        "style",
-        "mtype",
-        "fontNums",
-        "lineNums",
-      ],
+      allowAttributes: ALLOWATTRIBUTES,
     });
     schema.register(SCHEMA_NAME__INLINE, {
       isBlock: false,
       allowWhere: "$text",
-      allowAttributes: ["class", "databox", "style"],
+      allowAttributes: ALLOWATTRIBUTES,
     });
   }
   // 定义转换器
@@ -73,13 +73,21 @@ export default class LinkEditing extends Plugin {
         return createBlockElement(element, writer, this.imageConfig);
       },
     });
+    conversion.for("editingDowncast").elementToElement({
+      model: SCHEMA_NAME__INLINE,
+      view: (element, { writer }, data) => {
+        return createInlineElement(element, writer, this.imageConfig);
+      },
+    });
     conversion.for("dataDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
-      view: (element, { writer }) => {
-        console.log("gap-dataDowncast");
-
-        return createBlockElement(element, writer, this.imageConfig);
-      },
+      view: (element, { writer }) =>
+        createBlockElement(element, writer, this.imageConfig),
+    });
+    conversion.for("dataDowncast").elementToElement({
+      model: SCHEMA_NAME__INLINE,
+      view: (element, { writer }) =>
+        createInlineElement(element, writer, this.imageConfig),
     });
     // 将 HTML 渲染为 model
     conversion.for("upcast").elementToElement({
@@ -102,7 +110,26 @@ export default class LinkEditing extends Plugin {
     });
   }
 }
+//生成行内元素
+function createInlineElement(element, writer, imageConfig) {
+  console.log("gap-createInlineElement", imageConfig);
+  // 获取用户配置的 className
+  const { className } = imageConfig || {};
+  const blockElement = writer.createContainerElement("div", {
+    class: `${GAP_CLASS}-inline ${className || ""}`,
+  });
+  // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
+  const inlineElement = writer.createEmptyElement("div", {
+    class: `${GAP_CLASS}-data `,
+  });
+  writer.insert(writer.createPositionAt(blockElement, 0), inlineElement);
 
+  const _style = `width:${
+    20 * _lineNums + 1
+  };height: 20px;background: #fff;border-bottom:1px solid #ccc;`;
+  writer.setAttribute("style", _style, inlineElement);
+  return inlineElement;
+}
 //生成块级元素
 function createBlockElement(element, writer, imageConfig) {
   console.log("gap-createGapElement", imageConfig);
@@ -124,17 +151,16 @@ function createBlockElement(element, writer, imageConfig) {
   for (let i = 0; i < _lineNums; i++) {
     //createEmptyElement创建 空白 标签
     const _div = writer.createEmptyElement("div");
-    writer.setAttribute(
-      "style",
-      "border-bottom:1px solid #ccc;height:20px",
-      _div
-    );
+    const _style = `${
+      i !== 0 ? "border-bottom:1px solid #ccc;" : ""
+    }height:20px`;
+    writer.setAttribute("style", _style, _div);
     writer.insert(writer.createPositionAt(blockElement, 0), _div);
   }
 
   const _style = `height: ${
-    20 * _lineNums + 1
-  }px;background: #fff;border:1px solid #ccc;border-botom:unset;`;
+    20 * (_lineNums + 1) + 1
+  }px;background: #fff;border:1px solid #ccc;`;
 
   // 设置空格数据
   const arr = ["mtype", "fontNums", "lineNums"];
