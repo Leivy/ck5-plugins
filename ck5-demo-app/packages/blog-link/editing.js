@@ -113,29 +113,29 @@ function createBlockElement(element, writer, imageConfig) {
   const figure = writer.createContainerElement("figure", {
     class: `${GAP_CLASS}-block ${className || ""}`,
   });
+
+  // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
   const blockElement = writer.createContainerElement("div", {
     class: `${GAP_CLASS}-data `,
   });
 
   const _lineNums = Number(+element.getAttribute("lineNums"));
-  console.log("gap-_lineNums", _lineNums, writer);
   if (!Number.isInteger(_lineNums)) return console.log("行数不是整数");
   for (let i = 0; i < _lineNums; i++) {
+    //createEmptyElement创建 空白 标签
     const _div = writer.createEmptyElement("div");
     writer.setAttribute(
       "style",
-      "border-bottom:1px solid #000;height:20px",
+      "border-bottom:1px solid #ccc;height:20px",
       _div
     );
-    // writer.append(_div, blockElement );
-    console.log("gap-for", _div);
-    // writer.insert( _div, blockElement, 'end' );
     writer.insert(writer.createPositionAt(blockElement, 0), _div);
   }
 
-  const _style = `background: #eee;height: ${20 * _lineNums}px;`;
+  const _style = `height: ${
+    20 * _lineNums + 1
+  }px;background: #fff;border:1px solid #ccc;border-botom:unset;`;
 
-  // 使用 createEmptyElement 创建 img 标签，并设置属性
   // 设置空格数据
   const arr = ["mtype", "fontNums", "lineNums"];
   arr.map((k) => {
@@ -143,7 +143,7 @@ function createBlockElement(element, writer, imageConfig) {
   });
   writer.setAttribute("style", _style, blockElement);
 
-  // 将 img 作为子节点插入到 figure
+  // 将 blockElement 作为子节点插入到 figure
   writer.insert(writer.createPositionAt(figure, 0), blockElement);
   return figure;
 }
