@@ -44,12 +44,19 @@ export default class LinkEditing extends Plugin {
       isObject: true,
       isBlock: true,
       allowWhere: "$block",
-      allowAttributes: ["class", "databox",'style','mtype','fontNums','lineNums'],
+      allowAttributes: [
+        "class",
+        "databox",
+        "style",
+        "mtype",
+        "fontNums",
+        "lineNums",
+      ],
     });
     schema.register(SCHEMA_NAME__INLINE, {
       isBlock: false,
       allowWhere: "$text",
-      allowAttributes: ["class", "databox",'style'],
+      allowAttributes: ["class", "databox", "style"],
     });
   }
   // 定义转换器
@@ -60,13 +67,10 @@ export default class LinkEditing extends Plugin {
     // 将 model 渲染为 HTML
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
-      view: (element, { writer },data) => {
-        console.log("gap-editingDowncast",data);
-        return createBlockElement(
-          element,
-          writer,
-          this.imageConfig
-        );
+      view: (element, par, data) => {
+        const { writer } = par;
+        console.log("gap-editingDowncast", par);
+        return createBlockElement(element, writer, this.imageConfig);
       },
     });
     conversion.for("dataDowncast").elementToElement({
@@ -85,7 +89,7 @@ export default class LinkEditing extends Plugin {
       },
       // 根据 View 创建图片 Model
       model: function (view, { writer }) {
-        console.log("gap-upcast-根据 View 创建图片 Model",view);
+        console.log("gap-upcast-根据 View 创建图片 Model", view);
 
         const params = {};
         const imageInner = view.getChild(0);
@@ -109,27 +113,35 @@ function createBlockElement(element, writer, imageConfig) {
   const figure = writer.createContainerElement("figure", {
     class: `${GAP_CLASS}-block ${className || ""}`,
   });
-  const blockElement = writer.createEmptyElement("div");
+  const blockElement = writer.createContainerElement("div", {
+    class: `${GAP_CLASS}-data `,
+  });
 
-  const _lineNums=Number(+element.getAttribute('lineNums'))
-  console.log('gap-_lineNums',_lineNums,writer);
-  if(!Number.isInteger(_lineNums)) return console.log('行数不是整数');
-  for(let i = 0; i < _lineNums; i++ ){
-    const _div=writer.createEmptyElement("div");
-    writer.setAttribute('style','border-bottom:1px solid #000;height:20px',_div)
+  const _lineNums = Number(+element.getAttribute("lineNums"));
+  console.log("gap-_lineNums", _lineNums, writer);
+  if (!Number.isInteger(_lineNums)) return console.log("行数不是整数");
+  for (let i = 0; i < _lineNums; i++) {
+    const _div = writer.createEmptyElement("div");
+    writer.setAttribute(
+      "style",
+      "border-bottom:1px solid #000;height:20px",
+      _div
+    );
     // writer.append(_div, blockElement );
+    console.log("gap-for", _div);
+    // writer.insert( _div, blockElement, 'end' );
+    writer.insert(writer.createPositionAt(blockElement, 0), _div);
   }
 
-
-  const _style=`background: #eee;height: ${20*_lineNums}px;`
+  const _style = `background: #eee;height: ${20 * _lineNums}px;`;
 
   // 使用 createEmptyElement 创建 img 标签，并设置属性
   // 设置空格数据
-  ['mtype','fontNums','lineNums'].map((k) => {
+  const arr = ["mtype", "fontNums", "lineNums"];
+  arr.map((k) => {
     writer.setAttribute(k, element.getAttribute(k), blockElement);
   });
-  writer.setAttribute('style',_style, blockElement);
-
+  writer.setAttribute("style", _style, blockElement);
 
   // 将 img 作为子节点插入到 figure
   writer.insert(writer.createPositionAt(figure, 0), blockElement);
