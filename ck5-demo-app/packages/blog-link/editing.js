@@ -76,6 +76,8 @@ export default class LinkEditing extends Plugin {
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__INLINE,
       view: (element, { writer }, data) => {
+        console.log("gap-editingDowncast-SCHEMA_NAME__INLINE", par);
+
         return createInlineElement(element, writer, this.imageConfig);
       },
     });
@@ -159,7 +161,7 @@ function createBlockElement(element, writer, imageConfig) {
   }
 
   const _style = `height: ${
-    20 * (_lineNums + 1) + 1
+    20 * (_lineNums ) + 1
   }px;background: #fff;border:1px solid #ccc;`;
 
   // 设置空格数据
