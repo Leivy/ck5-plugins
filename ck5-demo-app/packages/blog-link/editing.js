@@ -1,17 +1,15 @@
 // editing.js
 
 import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
-import inlineHighlight from "@ckeditor/ckeditor5-typing/src/utils/inlinehighlight";
 import LinkCommand from "./command";
 import {
-  SCHEMA_NAME__GAP,
   COMMAND_NAME__GAP,
   EDITORING__GAP,
   SCHEMA_NAME__BLOCK,
-  GAP_CLASS,
   SCHEMA_NAME__INLINE,
+  GAP_CLASS,
 } from "./constant";
-import { toWidget } from "@ckeditor/ckeditor5-widget/src/utils";
+
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
 
 const ALLOWATTRIBUTES = [
@@ -36,21 +34,26 @@ export default class LinkEditing extends Plugin {
     this._defineSchema();
     this._defineConverters();
 
-    // 注册一个 BoldCommand 命令 COMMAND_NAME__GAP -> 'gap'
+    // 注册一个 BoldCommand 命令
     editor.commands.add(COMMAND_NAME__GAP, new LinkCommand(editor));
 
     // 当光标位于 link 中间，追加 class，用于高亮当前超链接
     // inlineHighlight(editor, SCHEMA_NAME__GAP, "a", HIGHLIGHT_CLASS);
+    // ADDED
   }
 
   // 注册 schema 相当于 model 里的 html 标签 容器
   _defineSchema() {
-    console.log("gap-注册schema _defineSchema");
     const schema = this.editor.model.schema;
+    // schema.extend("$text", { allowAttributes: SCHEMA_NAME__INLINE });
     schema.register(SCHEMA_NAME__BLOCK, {
       isObject: true,
       isBlock: true,
       allowWhere: "$block",
+      allowAttributes: ALLOWATTRIBUTES,
+    });
+    schema.register(SCHEMA_NAME__INLINE, {
+      allowWhere: "$text",
       allowAttributes: ALLOWATTRIBUTES,
     });
   }
@@ -61,18 +64,15 @@ export default class LinkEditing extends Plugin {
     // 将 model 渲染为 HTML
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
-      view: (element, par, data) => {
-        const { writer } = par;
-        console.log("gap-editingDowncast", par);
-        return createBlockElement(element, writer, this.imageConfig);
-      },
+      view: (element, { writer }, data) =>createBlockElement(element, writer, this.imageConfig);
     });
     conversion.for("dataDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
       view: (element, { writer }) =>
-        createBlockElement(element, writer, this.imageConfig),
+        createBlockElement(element, writer, this.imageConfig)
     });
     // 将 HTML 渲染为 model
+    //TODO upcast
     conversion.for("upcast").elementToElement({
       view: {
         name: "figure",
@@ -92,22 +92,41 @@ export default class LinkEditing extends Plugin {
       },
     });
     // inline
+    // Define how the custom inline tag is to be rendered in the view.
+    //TODO upcast
+    conversion.for("upcast").elementToElement({
+      model: SCHEMA_NAME__INLINE,
+      view: {
+        name: "span",
+        classes: "custom-inline-tag",
+      },
+    });
+
+    conversion.for("editingDowncast").elementToElement({
+      model: SCHEMA_NAME__INLINE,
+      view: (element, { writer }) => createInlineElement(element, writer);
+    });
+
+    conversion.for("dataDowncast").elementToElement({
+      model: SCHEMA_NAME__INLINE,
+      view: (element, { writer }) => createInlineElement(element, writer),
+    });
   }
 }
 //生成行内元素
 function createInlineElement(element, writer, imageConfig) {
-  console.log("gap-createInlineElement", imageConfig);
+  console.log("gap-createInlineElement", );
   // 获取用户配置的 className
   const { className } = imageConfig || {};
   const _fontNums = Number(+element.getAttribute("fontNums"));
-  console.log("生成行内元素_lineNums", _fontNums);
+  const _fontWidth = 10 * _fontNums + 2;
 
-  const blockElement = writer.createContainerElement("span", {
+  const blockElement = writer.createContainerElement("div", {
     class: `${GAP_CLASS}-inline ${className || ""}`,
   });
   writer.setAttribute(
     "style",
-    `display:inline-block;width:${4 * _fontNums + 1}px;`,
+    `display:inline-block;width:${_fontWidth}px;`,
     blockElement
   );
 
@@ -117,10 +136,9 @@ function createInlineElement(element, writer, imageConfig) {
   });
   writer.insert(writer.createPositionAt(blockElement, 0), inlineElement);
 
-  const _style = `display:inline-block;width:${
-    4 * _fontNums + 1
-  }px;height: 20px;background: #fff;border-bottom:1px solid #ccc;`;
+  const _style = `display:inline-block;width:${_fontWidth}px;background: #fff;border-bottom:1px solid #ccc;`;
   writer.setAttribute("style", _style, inlineElement);
+
   return blockElement;
 }
 //生成块级元素
@@ -130,7 +148,6 @@ function createBlockElement(element, writer, imageConfig) {
   const { className } = imageConfig || {};
   const _lineNums = Number(+element.getAttribute("lineNums"));
   const _mtype = Number(+element.getAttribute("mtype"));
-  console.log("_mtype", _mtype);
   if (+_mtype === 1) return createInlineElement(element, writer, imageConfig);
 
   // 使用 createContainerElement 创建容器元素

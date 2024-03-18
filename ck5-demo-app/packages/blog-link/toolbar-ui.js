@@ -18,7 +18,6 @@ export default class LinkToolbarUI extends Plugin {
 
 	_createToolbarButton() {
 		const editor = this.editor;
-		// COMMAND_NAME__GAP -> 'gap'
 		const linkCommand = editor.commands.get(COMMAND_NAME__GAP);
 
 		// TOOLBAR_NAME__GAP -> 'ck-link'

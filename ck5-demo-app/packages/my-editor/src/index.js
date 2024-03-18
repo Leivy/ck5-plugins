@@ -17,6 +17,7 @@ import Bold from "@plugin/plugin-bold/main";
 import Link from "@plugin/plugin-link/main";
 import Image from "@plugin/plugin-image/main";
 import Link2 from "@plugin/blog-link/main";
+import Link3 from "@plugin/add-gap";
 
 export default class MyEditor {
   constructor(props) {
@@ -38,9 +39,11 @@ export default class MyEditor {
         Bold,
         Link,
         Link2,
+        Link3,
         Image,
       ],
       toolbar: [
+        'CustomTagsPlugin',
         "xiaoti-gap",
         "undo",
         "redo",

@@ -3,6 +3,7 @@
 import Command from "@ckeditor/ckeditor5-core/src/command";
 import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
 import {
+  GAP_CLASS,
   SCHEMA_NAME__GAP,
   SCHEMA_NAME__BLOCK,
   SCHEMA_NAME__INLINE,
@@ -41,16 +42,9 @@ export default class LinkCommand extends Command {
       if (+mtype === 1) {
         console.log("mtype-行内");
         //行内
-        const position = selection.getFirstPosition();
-        const range = findAttributeRange(
-          position,
-          SCHEMA_NAME__INLINE,
-          selection.getAttribute(SCHEMA_NAME__INLINE),
-          model
-        );
-        // const inlineElement = writer.createElement(SCHEMA_NAME__INLINE, data);
-        // writer.setAttribute(SCHEMA_NAME__INLINE, data, range);
-        // model.insertContent(inlineElement, insertAtSelection);
+        const inlineElement = writer.createElement(SCHEMA_NAME__INLINE, data);
+        const position = model.document.selection.getFirstPosition();
+        model.insertContent(inlineElement, position);
       } else {
         console.log("mtype-块级");
         const blockElement = writer.createElement(SCHEMA_NAME__BLOCK, data);
@@ -59,40 +53,8 @@ export default class LinkCommand extends Command {
         // 如果选择位于段落的末尾，则将返回该段落之后的位置
         model.insertContent(blockElement, insertAtSelection);
       }
-
-      return;
-
       // 选区的锚点和焦点是否位于同一位置
-      if (selection.isCollapsed) {
-        const position = selection.getFirstPosition();
-
-        // 光标位于 link 中间
-        if (selection.hasAttribute(SCHEMA_NAME__GAP)) {
-          const range = findAttributeRange(
-            position,
-            SCHEMA_NAME__GAP,
-            selection.getAttribute(SCHEMA_NAME__GAP),
-            model
-          );
-          this._handleLink(writer, href, range);
-        }
-      } else {
-        const ranges = model.schema.getValidRanges(
-          selection.getRanges(),
-          SCHEMA_NAME__GAP
-        );
-        for (const range of ranges) {
-          this._handleLink(writer, href, range);
-        }
-      }
     });
   }
-
-  _handleLink(writer, href, range) {
-    if (href) {
-      writer.setAttribute(SCHEMA_NAME__GAP, href, range);
-    } else {
-      writer.removeAttribute(SCHEMA_NAME__GAP, range);
-    }
-  }
 }
+
