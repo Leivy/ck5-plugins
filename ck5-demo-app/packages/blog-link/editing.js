@@ -9,7 +9,7 @@ import {
   SCHEMA_NAME__INLINE,
   GAP_CLASS_INLINE,
   GAP_CLASS_BLOCK,
-  GAP_CLASS
+  GAP_CLASS,
 } from "./constant";
 
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
@@ -21,8 +21,9 @@ const ALLOWATTRIBUTES = [
   "mtype",
   "fontnums",
   "linenums",
+  "guid",
 ];
-
+const arr = ["mtype", "fontnums", "linenums"];
 export default class LinkEditing extends Plugin {
   static get pluginName() {
     return EDITORING__GAP;
@@ -75,7 +76,6 @@ export default class LinkEditing extends Plugin {
         createBlockElement(element, writer, this.imageConfig),
     });
     // 将 HTML 渲染为 model
-    //TODO upcast
     conversion.for("upcast").elementToElement({
       view: {
         name: "div",
@@ -83,7 +83,10 @@ export default class LinkEditing extends Plugin {
       },
       // 根据 View 创建图片 Model
       model: function (view, { writer }) {
-        console.log("gap-upcast-block-根据 View 创建图片 Model", view.getChild(0).getAttribute('linenums'));
+        console.log(
+          "gap-upcast-block-根据 View 创建图片 Model",
+          view.getChild(0).getAttribute("linenums")
+        );
 
         const params = {};
         const imageInner = view.getChild(0);
@@ -95,7 +98,6 @@ export default class LinkEditing extends Plugin {
     });
     // inline
     // Define how the custom inline tag is to be rendered in the view.
-    //TODO upcast
     conversion.for("upcast").elementToElement({
       view: {
         name: "div",
@@ -103,7 +105,10 @@ export default class LinkEditing extends Plugin {
       },
       // 根据 View 创建图片 Model
       model: function (view, { writer }) {
-        console.log("gap-upcast-inline-根据 View 创建图片 Model", view.getChild(0).getAttribute('linenums'));
+        console.log(
+          "gap-upcast-inline-根据 View 创建图片 Model",
+          view.getChild(0).getAttribute("fontnums")
+        );
 
         const params = {};
         const imageInner = view.getChild(0);
@@ -141,13 +146,16 @@ function createInlineElement(element, writer, imageConfig) {
     `display:inline-block;width:${_fontWidth}px;`,
     blockElement
   );
+  writer.setAttribute("guid", getuuid(), blockElement);
 
   // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
   const inlineElement = writer.createEmptyElement("span", {
-    class: `${GAP_CLASS}-data ${GAP_CLASS}-inline`,
+    class: `${GAP_CLASS}-data `,
   });
   writer.insert(writer.createPositionAt(blockElement, 0), inlineElement);
-
+  arr.map((k) => {
+    writer.setAttribute(k, element.getAttribute(k), inlineElement);
+  });
   const _style = `display:inline-block;width:${_fontWidth}px;background: #fff;border-bottom:1px solid #ccc;`;
   writer.setAttribute("style", _style, inlineElement);
 
@@ -166,13 +174,11 @@ function createBlockElement(element, writer, imageConfig) {
   const figure = writer.createContainerElement("div", {
     class: `${GAP_CLASS_BLOCK}  ${className || ""}`,
   });
-
+  writer.setAttribute("guid", getuuid(), figure);
   // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
   const blockElement = writer.createContainerElement("div", {
     class: `${GAP_CLASS}-data `,
   });
-  console.log('_lineNums',_lineNums);
-  
 
   if (!Number.isInteger(_lineNums)) return console.log("行数不是整数");
   for (let i = 0; i < _lineNums; i++) {
@@ -190,7 +196,7 @@ function createBlockElement(element, writer, imageConfig) {
   }px;background: #fff;border:1px solid #ccc;`;
 
   // 设置空格数据
-  const arr = ["mtype", "fontnums", "linenums"];
+
   arr.map((k) => {
     writer.setAttribute(k, element.getAttribute(k), blockElement);
   });
@@ -199,4 +205,41 @@ function createBlockElement(element, writer, imageConfig) {
   // 将 blockElement 作为子节点插入到 figure
   writer.insert(writer.createPositionAt(figure, 0), blockElement);
   return figure;
+}
+function getuuid() {
+  if (typeof crypto === "object") {
+    if (typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+    if (
+      typeof crypto.getRandomValues === "function" &&
+      typeof Uint8Array === "function"
+    ) {
+      const callback = (c) => {
+        const num = Number(c);
+        return (
+          num ^
+          (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (num / 4)))
+        ).toString(16);
+      };
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, callback);
+    }
+  }
+  let timestamp = new Date().getTime();
+  let perforNow =
+    (typeof performance !== "undefined" &&
+      performance.now &&
+      performance.now() * 1000) ||
+    0;
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    let random = Math.random() * 16;
+    if (timestamp > 0) {
+      random = (timestamp + random) % 16 | 0;
+      timestamp = Math.floor(timestamp / 16);
+    } else {
+      random = (perforNow + random) % 16 | 0;
+      perforNow = Math.floor(perforNow / 16);
+    }
+    return (c === "x" ? random : (random & 0x3) | 0x8).toString(16);
+  });
 }
