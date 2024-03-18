@@ -47,12 +47,9 @@ export default class LinkEditing extends Plugin {
   _defineSchema() {
     console.log("gap-注册schema _defineSchema");
     const schema = this.editor.model.schema;
-    schema.extend("$text", {
-      allowAttributes: ALLOWATTRIBUTES,
-    });
     schema.register(SCHEMA_NAME__BLOCK, {
-      // isObject: true,
-      // isBlock: true,
+      isObject: true,
+      isBlock: true,
       allowWhere: "$block",
       allowAttributes: ALLOWATTRIBUTES,
     });
@@ -94,6 +91,7 @@ export default class LinkEditing extends Plugin {
         return writer.createElement(SCHEMA_NAME__BLOCK, params);
       },
     });
+    // inline
   }
 }
 //生成行内元素
@@ -104,7 +102,7 @@ function createInlineElement(element, writer, imageConfig) {
   const _fontNums = Number(+element.getAttribute("fontNums"));
   console.log("生成行内元素_lineNums", _fontNums);
 
-  const blockElement = writer.createContainerElement("div", {
+  const blockElement = writer.createContainerElement("span", {
     class: `${GAP_CLASS}-inline ${className || ""}`,
   });
   writer.setAttribute(
@@ -114,7 +112,7 @@ function createInlineElement(element, writer, imageConfig) {
   );
 
   // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
-  const inlineElement = writer.createEmptyElement("div", {
+  const inlineElement = writer.createEmptyElement("span", {
     class: `${GAP_CLASS}-data ${GAP_CLASS}-inline`,
   });
   writer.insert(writer.createPositionAt(blockElement, 0), inlineElement);
@@ -136,7 +134,7 @@ function createBlockElement(element, writer, imageConfig) {
   if (+_mtype === 1) return createInlineElement(element, writer, imageConfig);
 
   // 使用 createContainerElement 创建容器元素
-  const figure = writer.createContainerElement("figure", {
+  const figure = writer.createContainerElement("div", {
     class: `${GAP_CLASS}-block ${className || ""}`,
   });
 

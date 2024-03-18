@@ -2,7 +2,11 @@
 
 import Command from "@ckeditor/ckeditor5-core/src/command";
 import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
-import { SCHEMA_NAME__GAP, SCHEMA_NAME__BLOCK ,SCHEMA_NAME__INLINE} from "./constant";
+import {
+  SCHEMA_NAME__GAP,
+  SCHEMA_NAME__BLOCK,
+  SCHEMA_NAME__INLINE,
+} from "./constant";
 import { findOptimalInsertionPosition } from "@ckeditor/ckeditor5-widget/src/utils";
 
 export default class LinkCommand extends Command {
@@ -33,21 +37,27 @@ export default class LinkCommand extends Command {
         model
       );
       //块级
-      const blockElement = writer.createElement(SCHEMA_NAME__BLOCK, data);
-      // 使用 findOptimalInsertionPosition 方法来获取最佳位置
-      // 如果某个选择位于段落的中间，则将返回该段落之前的位置，不拆分当前段落
-      // 如果选择位于段落的末尾，则将返回该段落之后的位置
-      model.insertContent(blockElement, insertAtSelection);
-      return 
-      if (+mtype === 1) {
-        console.log('mtype-行内');
-        //行内
-        const inlineElement = writer.createElement(SCHEMA_NAME__INLINE, data);
-        model.insertContent(inlineElement, insertAtSelection);
-      } else {
-        console.log('mtype-块级',);
 
-        
+      if (+mtype === 1) {
+        console.log("mtype-行内");
+        //行内
+        const position = selection.getFirstPosition();
+        const range = findAttributeRange(
+          position,
+          SCHEMA_NAME__INLINE,
+          selection.getAttribute(SCHEMA_NAME__INLINE),
+          model
+        );
+        // const inlineElement = writer.createElement(SCHEMA_NAME__INLINE, data);
+        // writer.setAttribute(SCHEMA_NAME__INLINE, data, range);
+        // model.insertContent(inlineElement, insertAtSelection);
+      } else {
+        console.log("mtype-块级");
+        const blockElement = writer.createElement(SCHEMA_NAME__BLOCK, data);
+        // 使用 findOptimalInsertionPosition 方法来获取最佳位置
+        // 如果某个选择位于段落的中间，则将返回该段落之前的位置，不拆分当前段落
+        // 如果选择位于段落的末尾，则将返回该段落之后的位置
+        model.insertContent(blockElement, insertAtSelection);
       }
 
       return;
