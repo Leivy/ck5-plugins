@@ -29,12 +29,12 @@ export default class LinkCommand extends Command {
     console.log("command-execute", data);
 
     const model = this.editor.model;
-    const selection = model.document.selection;
+    // const selection = model.document.selection;
 
     model.change((writer) => {
-      const { mtype, lineNums, fontNums } = data || {};
+      const { mtype } = data || {};
       const position = model.document.selection.getFirstPosition();
-     
+
       //块级
 
       if (+mtype === 1) {
@@ -54,4 +54,3 @@ export default class LinkCommand extends Command {
     });
   }
 }
-

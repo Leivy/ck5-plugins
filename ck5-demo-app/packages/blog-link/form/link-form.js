@@ -13,8 +13,8 @@ export default class LinkForm {
 		);
 		this.value= {
 			mtype:1,// 1 行内，2 整块
-			fontNums: undefined, // 行内-字数
-			lineNums: undefined, //  整块-行数
+			fontnums: undefined, // 行内-字数
+			linenums: undefined, //  整块-行数
 		}// 初始值
 
 		this.render();
@@ -115,8 +115,8 @@ function template(data) {
 					placeholder="请输入学生答题字数"
 					type="text"
 					class="link-form-input"
-					name="fontNums"
-					value="${data.fontNums || ''}"
+					name="fontnums"
+					value="${data.fontnums || ''}"
 				/>
 			</div>
 		</div>
@@ -126,8 +126,8 @@ function template(data) {
 					placeholder="请输入行数"
 					type="text"
 					class="link-form-input"
-					name="lineNums"
-					value="${data.lineNums || ''}"
+					name="linenums"
+					value="${data.linenums || ''}"
 				/>
 			</div>
 		</div>
