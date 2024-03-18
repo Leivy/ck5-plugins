@@ -64,7 +64,7 @@ export default class LinkEditing extends Plugin {
     // 将 model 渲染为 HTML
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
-      view: (element, { writer }, data) =>createBlockElement(element, writer, this.imageConfig);
+      view: (element, { writer }, data) =>createBlockElement(element, writer, this.imageConfig)
     });
     conversion.for("dataDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
@@ -104,7 +104,7 @@ export default class LinkEditing extends Plugin {
 
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__INLINE,
-      view: (element, { writer }) => createInlineElement(element, writer);
+      view: (element, { writer }) => createInlineElement(element, writer)
     });
 
     conversion.for("dataDowncast").elementToElement({

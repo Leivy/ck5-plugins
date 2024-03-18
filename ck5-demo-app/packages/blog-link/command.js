@@ -33,17 +33,14 @@ export default class LinkCommand extends Command {
 
     model.change((writer) => {
       const { mtype, lineNums, fontNums } = data || {};
-      const insertAtSelection = findOptimalInsertionPosition(
-        model.document.selection,
-        model
-      );
+      const position = model.document.selection.getFirstPosition();
+     
       //块级
 
       if (+mtype === 1) {
         console.log("mtype-行内");
         //行内
         const inlineElement = writer.createElement(SCHEMA_NAME__INLINE, data);
-        const position = model.document.selection.getFirstPosition();
         model.insertContent(inlineElement, position);
       } else {
         console.log("mtype-块级");
@@ -51,7 +48,7 @@ export default class LinkCommand extends Command {
         // 使用 findOptimalInsertionPosition 方法来获取最佳位置
         // 如果某个选择位于段落的中间，则将返回该段落之前的位置，不拆分当前段落
         // 如果选择位于段落的末尾，则将返回该段落之后的位置
-        model.insertContent(blockElement, insertAtSelection);
+        model.insertContent(blockElement, position);
       }
       // 选区的锚点和焦点是否位于同一位置
     });
