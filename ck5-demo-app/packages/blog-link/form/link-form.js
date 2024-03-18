@@ -137,7 +137,7 @@ function template(data) {
 
 	return {
 		classes: 'link-form-dialog',
-		title: '插入填空题',
+		title: '插入填空',
 		body,
 	};
 }

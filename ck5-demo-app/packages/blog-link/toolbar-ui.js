@@ -2,7 +2,7 @@
 
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
-import linkIcon from '@ckeditor/ckeditor5-link/theme/icons/link.svg';
+import linkIcon from './addgap.svg';
 import {
 	COMMAND_NAME__GAP,
 	TOOLBAR_NAME__GAP,
