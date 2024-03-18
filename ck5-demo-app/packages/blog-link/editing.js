@@ -47,22 +47,19 @@ export default class LinkEditing extends Plugin {
   _defineSchema() {
     console.log("gap-注册schema _defineSchema");
     const schema = this.editor.model.schema;
-    schema.register(SCHEMA_NAME__BLOCK, {
-      isObject: true,
-      isBlock: true,
-      allowWhere: "$block",
+    schema.extend("$text", {
       allowAttributes: ALLOWATTRIBUTES,
     });
-    schema.register(SCHEMA_NAME__INLINE, {
-      isBlock: false,
-      allowWhere: "$text",
+    schema.register(SCHEMA_NAME__BLOCK, {
+      // isObject: true,
+      // isBlock: true,
+      allowWhere: "$block",
       allowAttributes: ALLOWATTRIBUTES,
     });
   }
   // 定义转换器
   _defineConverters() {
     console.log("gap-定义转换器_defineConverters");
-
     const conversion = this.editor.conversion;
     // 将 model 渲染为 HTML
     conversion.for("editingDowncast").elementToElement({
@@ -73,23 +70,10 @@ export default class LinkEditing extends Plugin {
         return createBlockElement(element, writer, this.imageConfig);
       },
     });
-    conversion.for("editingDowncast").elementToElement({
-      model: SCHEMA_NAME__INLINE,
-      view: (element, { writer }, data) => {
-        console.log("gap-editingDowncast-SCHEMA_NAME__INLINE", par);
-
-        return createInlineElement(element, writer, this.imageConfig);
-      },
-    });
     conversion.for("dataDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
       view: (element, { writer }) =>
         createBlockElement(element, writer, this.imageConfig),
-    });
-    conversion.for("dataDowncast").elementToElement({
-      model: SCHEMA_NAME__INLINE,
-      view: (element, { writer }) =>
-        createInlineElement(element, writer, this.imageConfig),
     });
     // 将 HTML 渲染为 model
     conversion.for("upcast").elementToElement({
@@ -117,26 +101,39 @@ function createInlineElement(element, writer, imageConfig) {
   console.log("gap-createInlineElement", imageConfig);
   // 获取用户配置的 className
   const { className } = imageConfig || {};
+  const _fontNums = Number(+element.getAttribute("fontNums"));
+  console.log("生成行内元素_lineNums", _fontNums);
+
   const blockElement = writer.createContainerElement("div", {
     class: `${GAP_CLASS}-inline ${className || ""}`,
   });
+  writer.setAttribute(
+    "style",
+    `display:inline-block;width:${4 * _fontNums + 1}px;`,
+    blockElement
+  );
+
   // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
   const inlineElement = writer.createEmptyElement("div", {
-    class: `${GAP_CLASS}-data `,
+    class: `${GAP_CLASS}-data ${GAP_CLASS}-inline`,
   });
   writer.insert(writer.createPositionAt(blockElement, 0), inlineElement);
 
-  const _style = `width:${
-    20 * _lineNums + 1
-  };height: 20px;background: #fff;border-bottom:1px solid #ccc;`;
+  const _style = `display:inline-block;width:${
+    4 * _fontNums + 1
+  }px;height: 20px;background: #fff;border-bottom:1px solid #ccc;`;
   writer.setAttribute("style", _style, inlineElement);
-  return inlineElement;
+  return blockElement;
 }
 //生成块级元素
 function createBlockElement(element, writer, imageConfig) {
   console.log("gap-createGapElement", imageConfig);
   // 获取用户配置的 className
   const { className } = imageConfig || {};
+  const _lineNums = Number(+element.getAttribute("lineNums"));
+  const _mtype = Number(+element.getAttribute("mtype"));
+  console.log("_mtype", _mtype);
+  if (+_mtype === 1) return createInlineElement(element, writer, imageConfig);
 
   // 使用 createContainerElement 创建容器元素
   const figure = writer.createContainerElement("figure", {
@@ -148,7 +145,6 @@ function createBlockElement(element, writer, imageConfig) {
     class: `${GAP_CLASS}-data `,
   });
 
-  const _lineNums = Number(+element.getAttribute("lineNums"));
   if (!Number.isInteger(_lineNums)) return console.log("行数不是整数");
   for (let i = 0; i < _lineNums; i++) {
     //createEmptyElement创建 空白 标签
@@ -161,7 +157,7 @@ function createBlockElement(element, writer, imageConfig) {
   }
 
   const _style = `height: ${
-    20 * (_lineNums ) + 1
+    20 * _lineNums + 1
   }px;background: #fff;border:1px solid #ccc;`;
 
   // 设置空格数据
