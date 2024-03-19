@@ -13,7 +13,7 @@ import {
 } from "./constant";
 
 import Widget from "@ckeditor/ckeditor5-widget/src/widget";
-
+import { toWidget } from '@ckeditor/ckeditor5-widget/src/utils';
 const ALLOWATTRIBUTES = [
   "class",
   "databox",
@@ -59,6 +59,7 @@ export default class LinkEditing extends Plugin {
       allowWhere: "$text",
       allowAttributes: ALLOWATTRIBUTES,
     });
+    
   }
   // 定义转换器
   _defineConverters() {
@@ -68,7 +69,7 @@ export default class LinkEditing extends Plugin {
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
       view: (element, { writer }, data) =>
-        createBlockElement(element, writer, this.imageConfig),
+      toWidget(createBlockElement(element, writer, this.imageConfig), writer),
     });
     conversion.for("dataDowncast").elementToElement({
       model: SCHEMA_NAME__BLOCK,
@@ -121,7 +122,7 @@ export default class LinkEditing extends Plugin {
 
     conversion.for("editingDowncast").elementToElement({
       model: SCHEMA_NAME__INLINE,
-      view: (element, { writer }) => createInlineElement(element, writer),
+      view: (element, { writer }) => toWidget(createInlineElement(element, writer), writer),
     });
 
     conversion.for("dataDowncast").elementToElement({
