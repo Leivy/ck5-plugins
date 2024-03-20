@@ -9,9 +9,11 @@ import Paragraph from "@ckeditor/ckeditor5-paragraph/src/paragraph";
 // import Heading from "@ckeditor/ckeditor5-heading/src/heading";
 // import Link from "@ckeditor/ckeditor5-link/src/link";
 // import List from "@ckeditor/ckeditor5-list/src/list";
-
+import Indent from '@ckeditor/ckeditor5-indent/src/indent';
+import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
+import AlignmentUI from '@ckeditor/ckeditor5-alignment/src/alignmentui';
 // 调试器
-import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
+import CKEditorInspector from "@ckeditor/ckeditor5-inspector";
 // 自定义插件
 import Bold from "@plugin/plugin-bold/main";
 import Link from "@plugin/plugin-link/main";
@@ -33,21 +35,14 @@ export default class MyEditor {
 
   render() {
     ClassicEditor.create(document.querySelector(`#${this.id}`), {
-      plugins: [
-        Essentials,
-        Paragraph,
-        Bold,
-        Link,
-        Link2,
-        Link3,
-        Image,
-      ],
+      plugins: [Essentials, Paragraph, Bold, Link, Link2, Link3, Image,Indent,Alignment, AlignmentUI],
       toolbar: [
-        'CustomTagsPlugin',
+        "CustomTagsPlugin",
         "xiaoti-gap",
         "undo",
         "redo",
         "|",
+        'alignment:left', 'alignment:right', 'alignment:center', 'alignment:justify',
         Bold.pluginName,
         Link.pluginName,
         Image.pluginName,
@@ -55,11 +50,11 @@ export default class MyEditor {
       initialData: this.content,
       // 'imageConfig' --> IMAGE_CONFIG
       imageConfig: {
-        className: 'wise-wrong'
-      }
+        className: "wise-wrong",
+      },
     })
       .then((editor) => {
-        CKEditorInspector.attach( editor );
+        CKEditorInspector.attach(editor);
         this.editor = editor;
       })
       .catch((error) => {
