@@ -10,6 +10,15 @@
     "@ckeditor/ckeditor5-core" "^25.0.0"
     "@ckeditor/ckeditor5-upload" "^25.0.0"
 
+"@ckeditor/ckeditor5-alignment@^25.0.0":
+  version "25.0.0"
+  resolved "https://registry.npmmirror.com/@ckeditor/ckeditor5-alignment/-/ckeditor5-alignment-25.0.0.tgz#34edd692a841264eb30259ddbe797fcfab9b43f8"
+  integrity sha512-4FXQPj0WUsm2vIVg4oFLkiKPJWGgFuSJ4WYl+kMu+noSBrpp5I3w073xH5jojmuEIixcwzMhsk/frw1ew+sARg==
+  dependencies:
+    "@ckeditor/ckeditor5-core" "^25.0.0"
+    "@ckeditor/ckeditor5-ui" "^25.0.0"
+    "@ckeditor/ckeditor5-utils" "^25.0.0"
+
 "@ckeditor/ckeditor5-basic-styles@^25.0.0":
   version "25.0.0"
   resolved "https://registry.npmmirror.com/@ckeditor/ckeditor5-basic-styles/-/ckeditor5-basic-styles-25.0.0.tgz#b90342a1e72d284fd8f4b63397bdeaf747ceeb07"

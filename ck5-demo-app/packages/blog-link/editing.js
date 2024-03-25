@@ -33,7 +33,6 @@ export default class LinkEditing extends Plugin {
   }
   init() {
     const editor = this.editor;
-
     this._defineSchema();
     this._defineConverters();
 
@@ -140,7 +139,7 @@ function createInlineElement(element, writer, imageConfig) {
   const _fontNums = Number(+element.getAttribute("fontnums"));
   const _fontWidth = 10 * _fontNums + 2;
 
-  const blockElement = writer.createContainerElement("div", {
+  const blockElement = writer.createContainerElement("span", {
     class: `${GAP_CLASS_INLINE}  ${className || ""}`,
   });
   writer.setAttribute(
