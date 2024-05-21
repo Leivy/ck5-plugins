@@ -15,6 +15,7 @@ export default class LinkForm {
 			mtype:1,// 1 行内，2 整块
 			fontnums: undefined, // 行内-字数
 			linenums: undefined, //  整块-行数
+			linedisabled:false,//整块输入框是否加上分割线
 		}// 初始值
 
 		this.render();
@@ -129,6 +130,10 @@ function template(data) {
 					name="linenums"
 					value="${data.linenums || ''}"
 				/>
+			</div>
+			<div class="link-form-item">
+				<span>是否加分割线</span>
+				<input type="checkbox" class="link-form-checkbox" id="divisionline" name="linedisabled" value="divisionline"  >
 			</div>
 		</div>
       </div>

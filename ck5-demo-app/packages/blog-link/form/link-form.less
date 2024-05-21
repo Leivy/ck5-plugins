@@ -42,11 +42,27 @@
     span{
       padding-right: 10px;
     }
-    input{
+    .link-form-input{
       flex:1;
     }
   }
-
+  &-checkbox{
+    font-size: inherit;
+    height: 40px;
+    width: 20px;
+    text-align: left;
+  }
+  &-input[type='checkbox']{
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 2px;
+    outline: none;
+  }
+  &-input[type=checkbox]:checked{
+      border: none;
+      background:#409eff;
+      background-size: contain;
+  }
   &-input {
     vertical-align: middle;
     display: table-cell;

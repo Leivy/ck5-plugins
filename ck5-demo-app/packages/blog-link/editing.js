@@ -21,9 +21,10 @@ const ALLOWATTRIBUTES = [
   "mtype",
   "fontnums",
   "linenums",
+  "linedisabled",
   "guid",
 ];
-const arr = ["mtype", "fontnums", "linenums"];
+const arr = ["mtype", "fontnums", "linenums","linedisabled"];
 export default class LinkEditing extends Plugin {
   static get pluginName() {
     return EDITORING__GAP;
@@ -168,6 +169,8 @@ function createBlockElement(element, writer, imageConfig) {
   // 获取用户配置的 className
   const { className } = imageConfig || {};
   const _lineNums = Number(+element.getAttribute("linenums"));
+  const _linedisabled = Boolean(element.getAttribute("linedisabled"));
+  
   const _mtype = Number(+element.getAttribute("mtype"));
   if (+_mtype === 1) return createInlineElement(element, writer, imageConfig);
 
@@ -186,7 +189,7 @@ function createBlockElement(element, writer, imageConfig) {
     //createEmptyElement创建 空白 标签
     const _div = writer.createEmptyElement("span");
     const _style = `${
-      i !== 0 ? "border-bottom:1px solid #ccc;" : ""
+      (i !== 0 && _linedisabled) ? "border-bottom:1px solid #ccc;" : ""
     }height:20px;display:block;`;
     writer.setAttribute("style", _style, _div);
     writer.insert(writer.createPositionAt(blockElement, 0), _div);
@@ -194,7 +197,7 @@ function createBlockElement(element, writer, imageConfig) {
 
   const _style = `height: ${
     20 * _lineNums + 1
-  }px;background: #fff;border:1px solid #ccc;display:block;margin-bottom:10px`;
+  }px;background: #fff;border:1px solid #ccc;display:block;margin:10px 0`;
 
   // 设置空格数据
 
