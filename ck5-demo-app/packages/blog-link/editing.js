@@ -78,7 +78,7 @@ export default class LinkEditing extends Plugin {
     // 将 HTML 渲染为 model
     conversion.for("upcast").elementToElement({
       view: {
-        name: "div",
+        name: "span",
         classes: GAP_CLASS_BLOCK,
       },
       // 根据 View 创建图片 Model
@@ -100,7 +100,7 @@ export default class LinkEditing extends Plugin {
     // Define how the custom inline tag is to be rendered in the view.
     conversion.for("upcast").elementToElement({
       view: {
-        name: "div",
+        name: "span",
         classes: GAP_CLASS_INLINE,
       },
       // 根据 View 创建图片 Model
@@ -172,29 +172,29 @@ function createBlockElement(element, writer, imageConfig) {
   if (+_mtype === 1) return createInlineElement(element, writer, imageConfig);
 
   // 使用 createContainerElement 创建容器元素
-  const figure = writer.createContainerElement("div", {
+  const figure = writer.createContainerElement("span", {
     class: `${GAP_CLASS_BLOCK}  ${className || ""}`,
   });
   writer.setAttribute("guid", getuuid(), figure);
   // 使用 createContainerElement 创建 blockElement 标签，内部添加空白标签
-  const blockElement = writer.createContainerElement("div", {
+  const blockElement = writer.createContainerElement("span", {
     class: `${GAP_CLASS}-data `,
   });
 
   if (!Number.isInteger(_lineNums)) return console.log("行数不是整数");
   for (let i = 0; i < _lineNums; i++) {
     //createEmptyElement创建 空白 标签
-    const _div = writer.createEmptyElement("div");
+    const _div = writer.createEmptyElement("span");
     const _style = `${
       i !== 0 ? "border-bottom:1px solid #ccc;" : ""
-    }height:20px`;
+    }height:20px;display:block;`;
     writer.setAttribute("style", _style, _div);
     writer.insert(writer.createPositionAt(blockElement, 0), _div);
   }
 
   const _style = `height: ${
     20 * _lineNums + 1
-  }px;background: #fff;border:1px solid #ccc;`;
+  }px;background: #fff;border:1px solid #ccc;display:block;margin-bottom:10px`;
 
   // 设置空格数据
 
